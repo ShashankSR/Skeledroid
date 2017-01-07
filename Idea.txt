@@ -1,0 +1,99 @@
+------------ Todo 1 ----------------
+Parse the files and note the 
+Functions.
+Imported classes.
+------------------------------------
+Phase 2:
+Build skeleton.
+Json: 
+
+{
+classId:123
+fileClassName : ABC,
+extendsName: 	ABC,
+implementsClassNames: { ABC1, ABC2},
+type: ABC,
+startingActivity:{
+	className : ABC, className:ABC2
+	},
+functionCallsName{
+	Ovverriden{
+		classname:ABC,name:ABC,calls:{ abc1,abc2 }
+	}
+	Own{
+		functionId:1234,classname:ABC,name:ABC,calls:{ abc1,abc2},
+		functionId:1235,classname:ABC,name:ABC,calls:{ abc1,abc2}
+	}
+	publicStatic{
+		functionId:s123,classname:ABC,name:ABC,calls:{abc1,abc2}	
+	}
+}
+
+Map functions between.
+-----------------------------------
+
+Phase 3:
+
+{
+	name = classId = node1
+	name = className = node2
+	name = extendsName = node3
+	name = implementsName1 = node4
+	name = implementsName2 = node5
+	name = implementsName3 = node6
+
+	name = publStaticFunction1 = node7
+	name = publStaticFunction1 = node8
+	name = publStaticFunction1 = node9
+	
+	name = ovveriddenFunction1 = node10
+	name = ovveriddenFunction2 = node11
+	name = ovveriddenFunction3 = node12
+	name = ovveriddenFunction4 = node13
+	name = ovveriddenFunction5 = node14
+	
+	name = ownFunction1 = node15
+	name = ownFunction2 = node16
+	name = ownFunction3 = node17
+	name = ownFunction4 = node18
+	name = ownFunction5 = node19
+}
+
+{
+	name = classNameIdLink , source = 1 , target = 0
+	name = classExtendsLnk , source = 1 , target = 2
+	
+	name = classImplemtLnk1, source = 1 , target = 3
+	name = classImplemtLnk2, source = 1 , target = 4
+	name = classImplemtLnk3, source = 1 , target = 5
+
+	name = staticFunctLink1, source = 1 , target = 6
+	name = staticFunctLink1, source = 1 , target = 7
+	name = staticFunctLink1, source = 1 , target = 8
+
+	name = memFunctionLink1, source = 1 , target = 10
+	
+
+
+
+}
+
+Draw graph depecting lifecycle and inter function calls.
+
+-----------------------------------
+
+Phase 4:
+
+Read Android XML and convert it into a web representation
+
+-----------------------------------
+
+Phase 6:
+
+Attach view and code graphs
+
+------------------------------------
+
+Phase 20:
+
+Add workflow, changing if/else conditions, edit code.
