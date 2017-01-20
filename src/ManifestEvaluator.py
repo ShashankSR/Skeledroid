@@ -3,8 +3,10 @@
 from xml.dom.minidom import parse
 import xml.dom.minidom
 
+
+pwd = "/Users/shashank/Personal Projects/Skeledroid/"
 # Open XML document using minidom parser
-DOMTree = xml.dom.minidom.parse("ManifestWhatsapp.xml")
+DOMTree = xml.dom.minidom.parse(pwd + "main/AndroidManifest.xml")
 collection = DOMTree.documentElement
 if collection.hasAttribute("shelf"):
    print "Root element : %s" % collection.getAttribute("shelf")
