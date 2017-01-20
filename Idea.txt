@@ -1,3 +1,4 @@
+Why py :- Cross platform. No compilation. Easy
 ------------ Todo 1 ----------------
 Parse the files and note the 
 Functions.
