@@ -14,12 +14,29 @@ def iterate_children(parent):
         yield child
         child = child.nextSibling
 
+def attachAttributes(child,space):
+  for item in child.attributes.items():
+    if not ("tools" in str(item[0]) or "bind" in str(item[0])) :
+      print '   '*space + item[0] +"="+ "\"" + item[1] + "\""
+  print "  "*space + ">"
+
+def closeTag(data,space,customUIClass):
+  if not (customUIClass == "include" or customUIClass == "layout" or customUIClass == "import" \
+    or customUIClass == "data" or customUIClass == "variable" or customUIClass == "merge" ):
+        if customUIClass in data:
+          if data[customUIClass]['extends'] in data:
+            print '  '*space + "</" + data[data[customUIClass]['extends']]['extends'] +">" 
+          else:
+            print '  '*space + "</" + data[customUIClass]['extends'] +">"
+        else :
+          print '  '*space + "</" + customUIClass + ">"
+
 def parseChild(parent,space):
   for child in iterate_children(parent):
     if child.nodeType != child.TEXT_NODE and child.nodeType != child.COMMENT_NODE:
-      customUIClass = ""
-      custom = ""
-      if child.tagName == "include":
+      custom = child.tagName.split(".")
+      customUIClass = custom[len(custom) - 1]
+      if customUIClass == "include":
         layout = child.getAttribute("layout").replace("@layout/","")
         for root, dirs, files in os.walk(pwd+"/main"):
           for file in files:
@@ -28,47 +45,45 @@ def parseChild(parent,space):
               parseAndroidXmlDom(fileFullPath,space+1)
               break
       else :
-        if not (child.tagName == "include" or child.tagName == "layout" or child.tagName == "import" or child.tagName == "data" or child.tagName == "variable"):
-          custom = child.tagName.split(".")
-          if len(custom) !=0 :
-            customUIClass = custom[len(custom) - 1]
-            if customUIClass in data:
-              print '  '*space + '<' + data[customUIClass]['extends']
+        if not (customUIClass == "include" or customUIClass == "layout" or customUIClass == "import" or customUIClass == "data" or customUIClass == "variable"):
+          if customUIClass in data:
+            if data[customUIClass]['extends'] in data:
+              print '  '*space + '<' + data[data[customUIClass]['extends']]['extends']
             else :
-              print '  '*space + '<' + customUIClass
+              print '  '*space + '<' + data[customUIClass]['extends']
           else :
-            print '  '*space + '<' +child.tagName 
-          for item in child.attributes.items():
-            print '   '*space + item[0] +"="+ "\"" + item[1] + "\""
-      if not (child.tagName == "include" or child.tagName == "layout" or child.tagName == "import" or child.tagName == "data" or child.tagName == "variable"):
-        print "  "*space + ">"
+            print '  '*space + '<' + customUIClass
+          attachAttributes(child,space)
       parseChild(child,space+1)
-      if not (child.tagName == "include" or child.tagName == "layout" or child.tagName == "import" or child.tagName == "data" or child.tagName == "variable"):
-        if customUIClass in data:
-          print '  '*space + "</" + data[customUIClass]['extends'] +">"
-        else :
-          print '  '*space + "</" + customUIClass + ">"
-        #print child.attributes.items()
-
+      closeTag(data,space,customUIClass)
 
 def parseAndroidXmlDom(file,space):
   DOMTree = xml.dom.minidom.parse(file)
   collection = DOMTree.documentElement
-  if not (collection.tagName == "merge" or collection.tagName == "layout"):
-    print '<'*space + collection.tagName 
+  custom = collection.tagName.split(".")
+  customUIClass = custom[len(custom) - 1]
+  if not (customUIClass== "merge" or customUIClass == "layout"):
+    if customUIClass in data:
+      if data[customUIClass]['extends'] in data:
+        print '  '*space + '<' + data[data[customUIClass]['extends']]['extends']
+      else :
+        print '  '*space + '<' + data[customUIClass]['extends']
+    else :
+      print '  '*space + '<' + customUIClass
+    attachAttributes(collection,space)
   parseChild(collection,space)
+  closeTag(data,space,customUIClass)
+
+
+
+
 
 json_data = open(pwd + "testing/data.json")
 data = json.load(json_data)
 
-layoutFile = str(data['SignInActivity']['setContentView'][0]).replace("R.layout.","") + ".xml"
+layoutFile = str(data['EditPracticeActivity']['setContentView'][0]).replace("R.layout.","") + ".xml"
 for root, dirs, files in os.walk(pwd+"/main"):
     for file in files:
         if file.endswith(layoutFile):
              fileFullPath = os.path.join(root, file)
              parseAndroidXmlDom(fileFullPath,1)
-
-# ignore layout import variable data
-
-
-#parseAndroidXmlDom(pcwd+"activity_profile_edit_practice.xml",1)
