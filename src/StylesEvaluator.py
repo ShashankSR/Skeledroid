@@ -6,6 +6,7 @@ import glob,os
 import re
 import sys
 from lxml import etree
+import copy
 
 pwd = "/Users/shashank/Personal Projects/Skeledroid/"
 
@@ -141,23 +142,51 @@ with open(pwd + 'testing/'+ 'masterStyleSheet.xml', 'w') as outfile:
 
 items = styleDoc.xpath("//style")
 for item in items:
-    try:
-        if "parent" in item.attrib :
+    if "parent" in item.attrib :
+        parent = None
+        try:
             parent = styleDoc.xpath("//style[@name=\""+item.attrib["parent"]+"\"]")[0]
-            while parent:
-                for child in parent.getchildren():
-                    notInItemChild = True
-                    for itemChild in item.getchildren():
-                        if child.attrib["name"] in itemChild.attrib["name"]:
-                            notInItemChild = False
-                            break
-                    if notInItemChild:
-                        item.append(child)
+        except IndexError as e:
+            pass
+        while parent:
+            for child in parent.getchildren():
+                notInItemChild = True
+                for itemChild in item.getchildren():
+                    if child.attrib["name"] in itemChild.attrib["name"]:
+                        notInItemChild = False
+                if notInItemChild:
+                    item.append(copy.deepcopy(child))
+            try:
                 parent = styleDoc.xpath("//style[@name=\""+parent.attrib["parent"]+"\"]")[0]
-    except IndexError as e:
-        pass
-    except KeyError as e:
-        pass
+            except IndexError as e:
+                parent = None
+                pass
+            except KeyError as e:
+                parent = None
+    else :
+        parentStyle = item.attrib['name'].rpartition(".")[0]
+        try:
+            parent = styleDoc.xpath("//style[@name=\""+parentStyle+"\"]")[0]
+        except IndexError as e:
+            pass
+        while parent:
+            for child in parent.getchildren():
+                notInItemChild = True
+                for itemChild in item.getchildren():
+                    if child.attrib["name"] in itemChild.attrib["name"]:
+                        notInItemChild = False
+                if notInItemChild:
+                    item.append(copy.deepcopy(child))
+            try:
+                parentStyle = parentStyle.rpartition(".")[0]
+                parent = styleDoc.xpath("//style[@name=\""+parentStyle+"\"]")[0]
+            except IndexError as e:
+                parent = None
+                pass
+            except KeyError as e:
+                parent = None
+
+
 
 with open(pwd + 'testing/'+ 'masterStyleSheet.xml', 'w') as outfile:
     styleDoc.write(outfile, pretty_print=True)

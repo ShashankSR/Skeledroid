@@ -29,13 +29,12 @@ def openTag(data,space,customUIClass):
     print '  '*space + '<' + customUIClass
 
 def attachAttributes(child,space):
+  style = None
   for item in child.attributes.items():
     if not ("tools" in str(item[0]) or "bind" in str(item[0])) :
-      if "style" in str(item[0]):
+      if ("style" in str(item[0])) or ("them" in str(item[0])):
         try:
-          style = styleDoc.xpath("//style[@name=\""+str(item[1]).replace("@style/","")+"\"]")[0]
-          for styleItem in style.getchildren():
-            print '   '*space + styleItem.attrib['name'] +"="+ "\"" + styleItem.text + "\""    
+          style = styleDoc.xpath("//style[@name=\""+str(item[1]).replace("@style/","")+"\"]")[0] 
         except IndexError as e:
           pass
       elif "@dimen" in str(item[1]):
@@ -43,6 +42,7 @@ def attachAttributes(child,space):
           dimension = dimenDoc.xpath("//dimen[@name=\""+str(item[1]).replace("@dimen/","")+"\"]")[0]
           print '   '*space + item[0] +"="+ "\"" + dimension.text + "\""    
         except IndexError as e:
+          print '   '*space + item[0] +"="+ "\"" + "0dp" + "\""    
           pass
       elif "@color" in str(item[1]):
         try:
@@ -58,6 +58,14 @@ def attachAttributes(child,space):
           pass
       else:
         print '   '*space + item[0] +"="+ "\"" + item[1] + "\""
+  if style:
+    for styleItem in style.getchildren():
+      styleNotInItemChild = True
+      for item in child.attributes.items():
+          if styleItem.attrib["name"] in item[0]:
+              styleNotInItemChild = False
+      if styleNotInItemChild:
+        print '   '*space + styleItem.attrib['name'] +"="+ "\"" + styleItem.text + "\""   
   print "  "*space + ">"
 
 def closeTag(data,space,customUIClass):
