@@ -79,6 +79,22 @@ with open(pwd + 'testing/'+ 'masterColorSheet.xml', 'w') as outfile:
         print ("-----------No Classname Error------------")
 print fileCount
 
+dataMain = etree.fromstring("<book></book>")
+for root, dirs, files in os.walk(pwd+"/main"):
+    for file in files:
+        if re.match(r'string.*\.xml',file) :
+            fileFullPath = os.path.join(root, file)
+            data = etree.parse ( fileFullPath )
+            for item in data.xpath("//string"):
+                dataMain.append(item)
+            fileCount += 1
+with open(pwd + 'testing/'+ 'masterStringSheet.xml', 'w') as outfile:
+    try:
+        outfile.write(etree.tostring(dataMain,pretty_print=True))
+    except IndexError as e:
+        print ("-----------No Classname Error------------")
+print fileCount
+
 dimenDoc = etree.parse ( pwd + "testing/masterDimenSheet.xml" )
 dimensions = dimenDoc.xpath("//dimen")
 for item in dimensions:

@@ -11,6 +11,7 @@ pcwd = pwd + "main/res-profile/layout/"
 styleDoc = etree.parse ( pwd + "testing/masterStyleSheet.xml" )
 dimenDoc = etree.parse ( pwd + "testing/masterDimenSheet.xml" )
 colorDoc = etree.parse ( pwd + "testing/masterColorSheet.xml" )
+stringDoc = etree.parse ( pwd + "testing/masterStringSheet.xml" )
 
 def iterate_children(parent):
     child = parent.firstChild
@@ -47,6 +48,12 @@ def attachAttributes(child,space):
         try:
           color = colorDoc.xpath("//color[@name=\""+str(item[1]).replace("@color/","")+"\"]")[0]
           print '   '*space + item[0] +"="+ "\"" + color.text + "\""    
+        except IndexError as e:
+          pass
+      elif "@string" in str(item[1]):
+        try:
+          string = stringDoc.xpath("//string[@name=\""+str(item[1]).replace("@string/","")+"\"]")[0]
+          print '   '*space + item[0] +"="+ "\"" + string.text + "\""
         except IndexError as e:
           pass
       else:
